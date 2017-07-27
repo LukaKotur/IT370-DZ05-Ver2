@@ -1,0 +1,15 @@
+.card {
+    min-height: 671px;
+}
+
+.buttons {
+     position: absolute;
+     bottom: 30px;
+     left: 3px;
+ }
+@media (max-width: 768px) {
+    .buttons {
+        position: relative;
+        top:25px;
+    }
+}
