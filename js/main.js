@@ -3,23 +3,45 @@ $(function () {
 })
 
 
-function getMovies() {
+function getMovies(columns) {
     axios.get('https://api.themoviedb.org/3/discover/movie?api_key=fa155f635119344d33fcb84fb807649b&sort_by=popularity.desc').then((response) => {
         var movies = response.data.results;
         console.log(movies);
         var output = '';
         var modal = '';
+
+
         $.each(movies, function (index, movie) {
+            var rating = movie.vote_average;
+            let stars = '';
+            let silverStars = '';
+            let numberOfStars = 0;
+            let i = 0;
+
+            while (i < rating) {
+                stars += `
+                        <i class="fa fa-star" style="color: #FF8800;"></i>
+                     `;
+                i++;
+                numberOfStars = i;
+            }
+
+            while (i < 10 && i >= rating) {
+                silverStars += `
+                    <i class="fa fa-star-o" style="color: #FF8800;"></i>
+                `;
+                i++
+            }
             output += `
-                <div class="col-md-3 " style="margin-bottom: 15px;">
+                <div class="col-md-${columns} " style="margin-bottom: 15px;">
                     <div class="card">
-                      <img class="card-img-top img-fluid" src="http://image.tmdb.org/t/p/w1000/${movie.poster_path}">
+                      <a onclick="movieSelected('${movie.id}')" style="cursor:pointer;"><img class="card-img-top img-fluid" src="http://image.tmdb.org/t/p/w1000/${movie.poster_path}"></a>
                       <div class="card-block">
-                        <h4 class="card-title"><a onclick="movieSelected('${movie.id}')" style="cursor:pointer;">${movie.title}</a></h4>
-                        <p class="card-text">Rating: ${movie.vote_average}</p>
+                        <h5 class="card-title"><a onclick="movieSelected('${movie.id}')" style="cursor:pointer;">${movie.title}</a></h5>           
                         <div class="container buttons">
-                            <a onclick="movieSelected('${movie.id}')" class="btn btn-outline-primary col-md-12 col-xs-12" href="#" style="margin-bottom: 15px;">Movie Details</a>
-                            <button onclick="makeModal(${movie.id})" type="button" class="btn btn-outline-success col-md-12 col-xs-12" data-toggle="modal" data-target="#${movie.id}" style="cursor:pointer;">Quick View</button>
+                            <p class="card-text"><strong>Rating:</strong> ${stars} ${silverStars} <span>(${numberOfStars}/10)</span></p>
+                            <button onclick="makeModal(${movie.id})" type="button" class="btn btn-outline-success col-md-12 col-xs-12" data-toggle="modal" data-target="#${movie.id}" style="cursor:pointer; margin-bottom:15px;">Quick View</button>
+                            <a onclick="movieSelected('${movie.id}')" class="btn btn-outline-primary col-md-12 col-xs-12" href="#" >Movie Details</a>
                         </div>
                       </div>
                     </div>
@@ -44,12 +66,20 @@ function movieSelected(id) {
 function makeModal(movieId) {
 
     var modal = '';
-    axios.get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key=fa155f635119344d33fcb84fb807649b').then((response) => {
+    axios.get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key=fa155f635119344d33fcb84fb807649b&append_to_response=videos').then((response) => {
         let movie = response.data;
         var genres = '';
+        let trailer = '';
+        let youtubeUrl = movie.videos.results[0].key;
+        trailer = `
+              <iframe id="ytplayer" type="text/html" width="100%" height="300" style="margin-bottom: 10px;"
+              src="https://www.youtube.com/embed/${youtubeUrl}?autoplay=0" allowfullscreen
+              frameborder="0"></iframe>
+        `
+
+
         $.each(movie.genres, function (k, v) {
             genres += v.name + ', ';
-
         });
         genres = genres.substring(0, genres.length - 2);
         console.log(response);
@@ -65,7 +95,7 @@ function makeModal(movieId) {
                         </div>
                         <div class="modal-body">
                             <div class="text-center" style="margin-bottom: 15px;">                           
-                             <img src="http://image.tmdb.org/t/p/w1000/${movie.backdrop_path}" alt="" class="img-fluid" >
+                             ${trailer}
                              </div>
                             <ul class="list-group">
                                 <li class="list-group-item">
@@ -103,7 +133,7 @@ function makeModal(movieId) {
 function getMovie() {
     let movieId = sessionStorage.getItem('movieId');
 
-    axios.get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key=fa155f635119344d33fcb84fb807649b&append_to_response=credits').then((response) => {
+    axios.get('https://api.themoviedb.org/3/movie/' + movieId + '?api_key=fa155f635119344d33fcb84fb807649b&append_to_response=credits,videos').then((response) => {
         console.log(response);
         let movie = response.data;
         genres = '';
@@ -112,9 +142,18 @@ function getMovie() {
             genres += v.name + ', ';
 
         });
+        let trailer = '';
+        let youtubeUrl = movie.videos.results[0].key;
+
+        trailer = `
+              <iframe id="ytplayer" type="text/html" width="100%" height="350" style="margin-bottom: 10px;"
+              src="https://www.youtube.com/embed/${youtubeUrl}?autoplay=0" allowfullscreen 
+              frameborder="0"></iframe>
+        `
+
         var actors = '';
-        for(var i = 0; i < 5; i++){
-            actors += movie.credits.cast[i].name +', ';
+        for (var i = 0; i < 5; i++) {
+            actors += movie.credits.cast[i].name + ', ';
         }
 
         $.each(movie.production_companies, function (k, v) {
@@ -134,8 +173,9 @@ function getMovie() {
                         <a href="index.html" class="btn btn-outline-primary" style="width: 100%;">Go back </a>
                     </div>
                 </div>
-                <div class="col-md-8">
+                <div class="col-md-8" style="margin-bottom:15px;">
                     <h2>${movie.title}</h2>
+                    <div>${trailer}</div>
                     <ul class="list-group">
                         <li class="list-group-item">
                             <span><strong>Genre: </strong> ${genres}</span>
@@ -170,12 +210,11 @@ function getMovie() {
                         <li class="list-group-item">
                             <span><strong>Actors: </strong> ${actors}</span>
                         </li>
-                        
                     </ul>
+                    
                 </div>
             </div>
         `;
-
 
 
         $('#movie').html(output);

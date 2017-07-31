@@ -15,8 +15,13 @@
 <body>
 <div id="navbar"></div>
 
-<div class="container" style="margin-bottom: 20px; margin-top:20px;">
-    <h2>Top 20 Movies By Popularity</h2>
+<div class="container">
+    <div class="form-check">
+        <label class="form-check-label">
+            <input type="checkbox" class="form-check-input" id="sixColumns" onclick="getFilms()">
+            Show in six columns
+        </label>
+    </div>
 </div>
 
 <div class="container">
@@ -26,7 +31,7 @@
 
 <!-- jQuery first, then Tether, then Bootstrap JS. -->
 <script
-        src="http://code.jquery.com/jquery-3.2.1.min.js"
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"
@@ -37,6 +42,7 @@
         crossorigin="anonymous"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moviedb/0.2.8/moviedb.js"></script>
+<script src="https://use.fontawesome.com/49ca4ef6f8.js"></script>
 <script src="js/main.js"></script>
 
 <!-- Modal -->
@@ -45,9 +51,24 @@
 
 <script>
     $(document).ready(() => {
-        getMovies();
+        if ($('#sixColumns').is(':checked')) {
+            getMovies(6);
+
+        }else {
+            $('#movies').html('');
+            getMovies(3);
+        }
     });
 
+    function getFilms(){
+        if ($('#sixColumns').is(':checked')) {
+            getMovies(2);
+        }else {
+            $('#movies').html('');
+            getMovies(3);
+        }
+
+    }
 </script>
 </body>
 
