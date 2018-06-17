@@ -35,7 +35,7 @@ function getMovies(columns) {
             output += `
                 <div class="col-md-${columns} " style="margin-bottom: 15px;">
                     <div class="card">
-                      <a onclick="movieSelected('${movie.id}')" style="cursor:pointer;"><img class="card-img-top img-fluid" src="http://image.tmdb.org/t/p/w1000/${movie.poster_path}"></a>
+                      <a onclick="movieSelected('${movie.id}')" style="cursor:pointer;"><img class="card-img-top img-fluid" src="http://image.tmdb.org/t/p/original/${movie.poster_path}"></a>
                       <div class="card-block">
                         <h5 class="card-title"><a onclick="movieSelected('${movie.id}')" style="cursor:pointer;">${movie.title}</a></h5>           
                         <div class="container buttons">
@@ -167,7 +167,7 @@ function getMovie() {
         let output = `
             <div class=row style="margin-top:15px">
                 <div class="col-md-4">
-                    <img class="img-fluid" src="http://image.tmdb.org/t/p/w1000/${movie.poster_path}">
+                    <img class="img-fluid" src="http://image.tmdb.org/t/p/original/${movie.poster_path}">
                     <div class="ml-auto text-center" style="margin-top: 20px;">
                         <a href="${movie.homepage}" target="_blank"  class="btn btn-outline-success" style="width: 100%; margin-bottom:15px;">Visit Movie Site</a>
                         <a href="index.html" class="btn btn-outline-primary" style="width: 100%;">Go back </a>
